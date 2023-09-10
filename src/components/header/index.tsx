@@ -17,7 +17,7 @@ import {
   MoonIcon, 
   SunIcon,
 } from '@chakra-ui/icons'
-import Navlink from './navlink'
+import NavLink from './navlink'
 
 export default function Header () {
   const { colorMode, toggleColorMode } = useColorMode()
@@ -47,7 +47,7 @@ export default function Header () {
         <HStack spacing={8} alignItems="center">
           <Box>One Piece API</Box>
           <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
-            {links.map((link) => (<Navlink key={link.label} link={link} />))}
+            {links.map((link) => (<NavLink key={link.label} link={link} />))}
           </HStack>
         </HStack>
         <Flex alignItems="center">
@@ -58,6 +58,15 @@ export default function Header () {
           </Stack>
         </Flex>
       </Flex>
+      {isOpen ? (
+          <Box pb={4} display={{ md: 'none' }}>
+            <Stack as={'nav'} spacing={4}>
+              {links.map((link) => (
+                <NavLink key={link.label} link={link} />
+              ))}
+            </Stack>
+          </Box>
+        ) : null}
     </Box>
   )
 }
