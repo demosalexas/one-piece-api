@@ -18,6 +18,7 @@ import {
   SunIcon,
 } from '@chakra-ui/icons'
 import NavLink from './navlink'
+import Logo from '../logo'
 
 export default function Header () {
   const { colorMode, toggleColorMode } = useColorMode()
@@ -45,7 +46,9 @@ export default function Header () {
           onClick={isOpen ? onClose  : onOpen}
         />
         <HStack spacing={8} alignItems="center">
-          <Box>One Piece API</Box>
+          <Box>
+            <Logo />
+          </Box>
           <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
             {links.map((link) => (<NavLink key={link.label} link={link} />))}
           </HStack>
