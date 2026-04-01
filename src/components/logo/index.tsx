@@ -1,10 +1,9 @@
 import Image from "next/image";
-import NextLink from 'next/link'
-import { Link } from '@chakra-ui/react'
+import Link from 'next/link'
 
 export default function Logo () {
   return (
-    <Link as={NextLink} href='/' _hover={{cursor: 'pointer'}}>
+    <Link href='/' className="hover:cursor-pointer">
       <Image 
         src="/luffy-flag-icon.png" 
         alt="Luffy Jolly Roger"

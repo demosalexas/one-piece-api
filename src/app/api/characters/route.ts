@@ -1,36 +1,25 @@
 import { NextResponse } from 'next/server'
 
-import { createPages } from '@/utils/createPages'
-import data from '@/data/characters.json' 
+import { supabase } from '@/supabase/client'
 
 export async function GET(request: Request) {
   const url = new URL(request.url)
-  const searchParams = new URLSearchParams(url.searchParams)
-  const currentPage: number | undefined = Number(searchParams.get('page')) 
-  const numberOfCharacters: number = data.length
-  const pages = createPages(data, 20)
-  const numberOfPages: number = Object.keys(pages).length
+  const page = Number(url.searchParams.get('page')) || 1
+  const limit = Number(url.searchParams.get('limit')) || 20
 
-  let page: any[] = pages[`page1`]
+  const { 
+    data, 
+    error 
+  } = await supabase
+    .from('characters')
+    .select('*')
+    .limit(limit)
+    .order('created_at', { ascending: false })
+    .range((page - 1) * limit, page * limit - 1)
 
-  if(typeof currentPage === 'number' && currentPage <= numberOfPages && currentPage > 0) {
-    page = pages[`page${currentPage}`]
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  const baseUrl = 'https://onepieceapi.com/api/characters'
-  const nextUrl = `${baseUrl}?page=${currentPage <= numberOfPages && currentPage > 0 ? currentPage + 1 : 2}`
-  const previousUrl = `${baseUrl}?page=${currentPage <= numberOfPages && currentPage > 0 ? currentPage - 1 : null}`
-
-  const info = {
-    characters: numberOfCharacters,
-    pages: numberOfPages,
-    currentPage: currentPage,
-    next: nextUrl,
-    previous: previousUrl,
-  }
-
-  return NextResponse.json({
-    info,
-    data: page,
-  })
+  return NextResponse.json(data)
 }
