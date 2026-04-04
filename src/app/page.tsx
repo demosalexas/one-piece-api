@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  Cherry,
   Coins,
   ExternalLink,
   Heart,
@@ -9,6 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { CatalogNav } from "@/components/layout/catalog-nav";
 import Logo from "@/components/logo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -74,18 +76,24 @@ export default function Home() {
       />
 
       <header className="relative z-20 px-4 pt-6 md:px-8">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
-          <div className="home-animate-fade flex items-center gap-3 rounded-full border border-border/80 bg-card/85 py-2 pr-2 pl-3 shadow-sm backdrop-blur-md">
+        <div className="mx-auto flex min-w-0 max-w-5xl items-center gap-3 md:gap-4">
+          <div className="home-animate-fade flex shrink-0 items-center gap-3 rounded-full border border-border/80 bg-card/85 py-2 pr-2 pl-3 shadow-sm backdrop-blur-md">
             <Logo />
             <span className="hidden font-display text-[0.65rem] font-medium tracking-[0.2em] text-muted-foreground uppercase sm:inline">
               API
             </span>
           </div>
-          <nav className="home-animate-fade home-delay-1 flex flex-wrap items-center justify-end gap-1.5 rounded-full border border-border/80 bg-card/85 p-1 shadow-sm backdrop-blur-md">
+          <CatalogNav className="home-animate-fade home-delay-1">
             <Button variant="ghost" size="sm" asChild>
               <Link href="/characters">
                 <Users data-icon="inline-start" />
                 Characters
+              </Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/devil-fruits">
+                <Cherry data-icon="inline-start" />
+                Devil fruits
               </Link>
             </Button>
             <Button variant="ghost" size="sm" asChild>
@@ -106,7 +114,7 @@ export default function Home() {
                 GitHub
               </a>
             </Button>
-          </nav>
+          </CatalogNav>
         </div>
       </header>
 

@@ -4,10 +4,10 @@ import { headers } from "next/headers";
 import Link from "next/link";
 
 import {
-  type ApiCharacter,
-  CharacterCard,
-} from "@/components/characters/character-card";
-import { CharactersPagination } from "@/components/characters/characters-pagination";
+  type ApiDevilFruitRow,
+  DevilFruitCard,
+} from "@/components/devil-fruits/devil-fruit-card";
+import { DevilFruitsPagination } from "@/components/devil-fruits/devil-fruits-pagination";
 import { CatalogNav } from "@/components/layout/catalog-nav";
 import { LogoMark } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -21,29 +21,29 @@ import {
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Characters",
-  description: "Browse characters from the One Piece API.",
+  title: "Devil fruits",
+  description: "Browse devil fruits from the One Piece API.",
 };
 
 const LIMIT_OPTIONS = new Set([12, 24, 36]);
 
-async function fetchCharacters(
+async function fetchDevilFruits(
   page: number,
   limit: number,
-): Promise<{ ok: true; data: ApiCharacter[] } | { ok: false }> {
+): Promise<{ ok: true; data: ApiDevilFruitRow[] } | { ok: false }> {
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
   const proto = h.get("x-forwarded-proto") ?? "http";
-  const url = `${proto}://${host}/api/characters?page=${page}&limit=${limit}`;
+  const url = `${proto}://${host}/api/devil-fruits?page=${page}&limit=${limit}`;
 
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) return { ok: false };
   const data = (await res.json()) as unknown;
   if (!Array.isArray(data)) return { ok: false };
-  return { ok: true, data: data as ApiCharacter[] };
+  return { ok: true, data: data as ApiDevilFruitRow[] };
 }
 
-export default async function CharactersPage({
+export default async function DevilFruitsPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: string; limit?: string }>;
@@ -53,7 +53,7 @@ export default async function CharactersPage({
   const rawLimit = Number(sp.limit);
   const limit = LIMIT_OPTIONS.has(rawLimit) ? rawLimit : 12;
 
-  const result = await fetchCharacters(page, limit);
+  const result = await fetchDevilFruits(page, limit);
 
   return (
     <div
@@ -72,7 +72,7 @@ export default async function CharactersPage({
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute right-0 bottom-0 size-[min(80vw,420px)] translate-x-1/4 translate-y-1/4 rounded-full bg-[radial-gradient(circle,color-mix(in_oklch,oklch(0.55_0.12_220)_22%,transparent),transparent_70%)] blur-3xl"
+        className="pointer-events-none absolute right-0 bottom-0 size-[min(80vw,420px)] translate-x-1/4 translate-y-1/4 rounded-full bg-[radial-gradient(circle,color-mix(in_oklch,oklch(0.62_0.14_145)_22%,transparent),transparent_70%)] blur-3xl"
       />
 
       <header className="relative z-10 border-b border-border/50 bg-card/40 backdrop-blur-md">
@@ -93,13 +93,13 @@ export default async function CharactersPage({
                 Home
               </Link>
             </Button>
-            <Button variant="default" size="sm" asChild>
+            <Button variant="ghost" size="sm" asChild>
               <Link href="/characters">
                 <Users data-icon="inline-start" />
                 Characters
               </Link>
             </Button>
-            <Button variant="ghost" size="sm" asChild>
+            <Button variant="default" size="sm" asChild>
               <Link href="/devil-fruits">
                 <Cherry data-icon="inline-start" />
                 Devil fruits
@@ -124,35 +124,46 @@ export default async function CharactersPage({
       <main className="relative z-10 mx-auto max-w-6xl px-4 py-10 md:px-8 md:py-14">
         <div className="mb-10 max-w-2xl space-y-3">
           <p className="font-display text-[0.7rem] font-medium tracking-[0.28em] text-primary uppercase">
-            Grand Line · Catalog
+            Grand Line · Powers
           </p>
           <h1 className="font-display text-3xl font-medium tracking-tight text-balance text-foreground md:text-4xl">
-            Characters
+            Devil fruits
           </h1>
           <p className="text-pretty text-sm/relaxed text-muted-foreground md:text-base/relaxed">
-            Explore the dataset with pagination. Portrait images will appear on
-            each card when available.
+            Names and models use the same localized JSON shape everywhere:{" "}
+            <span className="font-mono text-[0.8125rem] text-foreground/90">
+              en
+            </span>
+            ,{" "}
+            <span className="font-mono text-[0.8125rem] text-foreground/90">
+              jp
+            </span>
+            ,{" "}
+            <span className="font-mono text-[0.8125rem] text-foreground/90">
+              romaji
+            </span>
+            .
           </p>
         </div>
 
         {!result.ok ? (
           <Card className="border-destructive/30 bg-card/90">
             <CardHeader>
-              <CardTitle>Could not load characters</CardTitle>
+              <CardTitle>Could not load devil fruits</CardTitle>
               <CardDescription>
                 The API did not return data. Try again in a moment.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button asChild className="rounded-full" variant="outline">
-                <Link href={`/characters?page=1&limit=${limit}`}>Retry</Link>
+                <Link href={`/devil-fruits?page=1&limit=${limit}`}>Retry</Link>
               </Button>
             </CardContent>
           </Card>
         ) : result.data.length === 0 ? (
           <Card className="bg-card/90">
             <CardHeader>
-              <CardTitle>No characters here</CardTitle>
+              <CardTitle>No devil fruits here</CardTitle>
               <CardDescription>
                 This page is empty. Go back to the first page or change how many
                 results you show per page.
@@ -160,11 +171,11 @@ export default async function CharactersPage({
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               <Button asChild className="rounded-full">
-                <Link href="/characters?page=1&limit=12">First page</Link>
+                <Link href="/devil-fruits?page=1&limit=12">First page</Link>
               </Button>
               {page > 1 ? (
                 <Button asChild className="rounded-full" variant="outline">
-                  <Link href={`/characters?page=${page - 1}&limit=${limit}`}>
+                  <Link href={`/devil-fruits?page=${page - 1}&limit=${limit}`}>
                     Previous page
                   </Link>
                 </Button>
@@ -174,14 +185,14 @@ export default async function CharactersPage({
         ) : (
           <>
             <ul className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {result.data.map((character) => (
-                <li key={character.id}>
-                  <CharacterCard character={character} className="h-full" />
+              {result.data.map((fruit) => (
+                <li key={fruit.id}>
+                  <DevilFruitCard fruit={fruit} />
                 </li>
               ))}
             </ul>
             <div className="mt-10">
-              <CharactersPagination
+              <DevilFruitsPagination
                 limit={limit}
                 page={page}
                 resultCount={result.data.length}

@@ -1,13 +1,14 @@
-import { ArrowLeft, BookOpen, Coins, Users } from "lucide-react";
+import { ArrowLeft, BookOpen, Cherry, Coins, Users } from "lucide-react";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 
 import {
   BountiesPagination,
-  type BountyFilter,
   BountyFilterTabs,
+  BountySortTabs,
 } from "@/components/bounties/bounties-pagination";
+import { CatalogNav } from "@/components/layout/catalog-nav";
 import {
   type ApiBountyRow,
   BountyCard,
@@ -21,6 +22,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  type BountyFilter,
+  type BountySort,
+  buildBountiesListHref,
+  parseBountyFilter,
+  parseBountySort,
+} from "@/lib/bounties-catalog-url";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -30,17 +38,11 @@ export const metadata: Metadata = {
 
 const LIMIT_OPTIONS = new Set([12, 24, 36]);
 
-function parseFilter(raw: string | string[] | undefined): BountyFilter {
-  const v = Array.isArray(raw) ? raw[0] : raw;
-  if (v === "true") return "active";
-  if (v === "false") return "inactive";
-  return "all";
-}
-
 async function fetchBounties(
   page: number,
   limit: number,
   filter: BountyFilter,
+  sort: BountySort,
 ): Promise<{ ok: true; data: ApiBountyRow[] } | { ok: false }> {
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
@@ -51,6 +53,8 @@ async function fetchBounties(
   });
   if (filter === "active") q.set("isActive", "true");
   if (filter === "inactive") q.set("isActive", "false");
+  if (sort === "high") q.set("sort", "high");
+  if (sort === "low") q.set("sort", "low");
   const url = `${proto}://${host}/api/bounties?${q.toString()}`;
 
   const res = await fetch(url, { cache: "no-store" });
@@ -67,22 +71,24 @@ export default async function BountiesPage({
     page?: string;
     limit?: string;
     isActive?: string;
+    sort?: string;
   }>;
 }) {
   const sp = await searchParams;
   const page = Math.max(1, Math.floor(Number(sp.page) || 1));
   const rawLimit = Number(sp.limit);
   const limit = LIMIT_OPTIONS.has(rawLimit) ? rawLimit : 12;
-  const filter = parseFilter(sp.isActive);
+  const filter = parseBountyFilter(sp.isActive);
+  const sort = parseBountySort(sp.sort);
 
-  const result = await fetchBounties(page, limit, filter);
+  const result = await fetchBounties(page, limit, filter, sort);
 
-  const queryRetry = new URLSearchParams({
-    page: "1",
-    limit: String(limit),
+  const retryHref = buildBountiesListHref({
+    page: 1,
+    limit,
+    filter,
+    sort,
   });
-  if (filter === "active") queryRetry.set("isActive", "true");
-  if (filter === "inactive") queryRetry.set("isActive", "false");
 
   return (
     <div
@@ -105,9 +111,9 @@ export default async function BountiesPage({
       />
 
       <header className="relative z-10 border-b border-border/50 bg-card/40 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 md:px-8">
+        <div className="mx-auto flex min-w-0 max-w-6xl items-center gap-3 px-4 py-4 md:gap-4 md:px-8">
           <Link
-            className="flex items-center gap-3 rounded-full border border-border/80 bg-card/85 py-2 pr-2 pl-3 shadow-sm backdrop-blur-md transition-opacity hover:opacity-90"
+            className="flex shrink-0 items-center gap-3 rounded-full border border-border/80 bg-card/85 py-2 pr-2 pl-3 shadow-sm backdrop-blur-md transition-opacity hover:opacity-90"
             href="/"
           >
             <LogoMark />
@@ -115,7 +121,7 @@ export default async function BountiesPage({
               API
             </span>
           </Link>
-          <nav className="flex flex-wrap items-center justify-end gap-1.5 rounded-full border border-border/80 bg-card/85 p-1 shadow-sm backdrop-blur-md">
+          <CatalogNav>
             <Button variant="ghost" size="sm" asChild>
               <Link href="/">
                 <ArrowLeft data-icon="inline-start" />
@@ -126,6 +132,12 @@ export default async function BountiesPage({
               <Link href="/characters">
                 <Users data-icon="inline-start" />
                 Characters
+              </Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/devil-fruits">
+                <Cherry data-icon="inline-start" />
+                Devil fruits
               </Link>
             </Button>
             <Button variant="default" size="sm" asChild>
@@ -140,7 +152,7 @@ export default async function BountiesPage({
                 Docs
               </Link>
             </Button>
-          </nav>
+          </CatalogNav>
         </div>
       </header>
 
@@ -154,11 +166,14 @@ export default async function BountiesPage({
               Bounties
             </h1>
             <p className="text-pretty text-sm/relaxed text-muted-foreground md:text-base/relaxed">
-              Marine-issued rewards from the dataset. Filter by active status
-              and paginate like the characters catalog.
+              Filter by status, sort by amount or date, and paginate through the
+              dataset.
             </p>
           </div>
-          <BountyFilterTabs filter={filter} limit={limit} />
+          <div className="flex w-full max-w-xl flex-col gap-3 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+            <BountySortTabs filter={filter} limit={limit} sort={sort} />
+            <BountyFilterTabs filter={filter} limit={limit} sort={sort} />
+          </div>
         </div>
 
         {!result.ok ? (
@@ -171,7 +186,7 @@ export default async function BountiesPage({
             </CardHeader>
             <CardContent>
               <Button asChild className="rounded-full" variant="outline">
-                <Link href={`/bounties?${queryRetry.toString()}`}>Retry</Link>
+                <Link href={retryHref}>Retry</Link>
               </Button>
             </CardContent>
           </Card>
@@ -185,16 +200,26 @@ export default async function BountiesPage({
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               <Button asChild className="rounded-full">
-                <Link href="/bounties?page=1&limit=12">First page</Link>
+                <Link
+                  href={buildBountiesListHref({
+                    page: 1,
+                    limit: 12,
+                    filter: "all",
+                    sort: "newest",
+                  })}
+                >
+                  First page
+                </Link>
               </Button>
               {page > 1 ? (
                 <Button asChild className="rounded-full" variant="outline">
                   <Link
-                    href={
-                      filter === "all"
-                        ? `/bounties?page=${page - 1}&limit=${limit}`
-                        : `/bounties?page=${page - 1}&limit=${limit}&isActive=${filter === "active" ? "true" : "false"}`
-                    }
+                    href={buildBountiesListHref({
+                      page: page - 1,
+                      limit,
+                      filter,
+                      sort,
+                    })}
                   >
                     Previous page
                   </Link>
@@ -217,6 +242,7 @@ export default async function BountiesPage({
                 limit={limit}
                 page={page}
                 resultCount={result.data.length}
+                sort={sort}
               />
             </div>
           </>

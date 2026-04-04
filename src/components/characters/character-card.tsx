@@ -1,6 +1,11 @@
 import { Coins, Droplets, Ruler, UserRound } from "lucide-react";
+import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
+import {
+  displayCharacterName,
+  subtitleCharacterName,
+} from "@/lib/character-name";
 import { cn } from "@/lib/utils";
 
 export type ApiBounty = {
@@ -23,24 +28,6 @@ export type ApiCharacter = {
   bounties?: ApiBounty[] | null;
 };
 
-function parseName(name: unknown): { title: string; lineJp?: string } {
-  if (!name || typeof name !== "object") {
-    return { title: "Unknown" };
-  }
-  const o = name as Record<string, unknown>;
-  const en = typeof o.en === "string" ? o.en : "";
-  const romaji = typeof o.romaji === "string" ? o.romaji : "";
-  const jp = typeof o.jp === "string" ? o.jp : "";
-  const title = en.trim() || romaji.trim() || jp.trim() || "Unknown";
-  const lineJp =
-    jp && jp !== title
-      ? jp
-      : romaji && romaji !== title && !en
-        ? romaji
-        : undefined;
-  return { title, lineJp };
-}
-
 function formatBerry(n: number | null): string {
   if (n === null || Number.isNaN(n)) return "—";
   return `฿ ${n.toLocaleString("en-US")}`;
@@ -53,7 +40,8 @@ export function CharacterCard({
   character: ApiCharacter;
   className?: string;
 }) {
-  const { title, lineJp } = parseName(character.name);
+  const title = displayCharacterName(character.name);
+  const lineJp = subtitleCharacterName(character.name, title);
   const bounties = character.bounties ?? [];
   const shownBounties = bounties.filter((b) => b.is_active && b.amount != null);
   const fallbackBounties = shownBounties.length
@@ -138,9 +126,9 @@ export function CharacterCard({
         </div>
 
         {fallbackBounties.length > 0 ? (
-          <div className="mt-auto space-y-2 border-t border-border/50 pt-3">
+          <div className="space-y-2 border-t border-border/50 pt-3">
             <p className="text-[0.65rem] font-medium tracking-[0.18em] text-muted-foreground uppercase">
-              Bounties
+              Bounty
             </p>
             <ul className="flex flex-wrap gap-1.5">
               {fallbackBounties.map((b) => (
@@ -166,6 +154,15 @@ export function CharacterCard({
             </ul>
           </div>
         ) : null}
+
+        <div className="mt-auto border-t border-border/50 pt-3">
+          <Link
+            className="inline-flex text-[0.8125rem] font-medium text-primary underline-offset-4 hover:underline"
+            href={`/characters/${character.id}`}
+          >
+            Browse character
+          </Link>
+        </div>
       </div>
     </article>
   );

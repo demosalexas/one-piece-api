@@ -62,7 +62,19 @@ const DEVIL_FRUIT_ROW_FIELDS: {
 }[] = [
   { key: "id", type: "string", notes: "UUID primary key" },
   { key: "created_at", type: "string", notes: "ISO 8601 timestamp" },
-  { key: "name", type: "string | null" },
+  {
+    key: "name",
+    type: "object | null",
+    notes: "Localized fruit name; CharacterNameJson when present (en, jp, romaji)",
+  },
+  {
+    key: "model",
+    type: "object | null",
+    notes: "Localized model name; same CharacterNameJson shape when present",
+  },
+  { key: "type", type: "string | null", notes: "e.g. Paramecia, Zoan, Logia" },
+  { key: "sub_type", type: "string | null" },
+  { key: "image_url", type: "string | null" },
 ];
 
 function toRows(
@@ -288,7 +300,7 @@ export default function DocumentationPage() {
           <CardHeader>
             <CardTitle>Bounties</CardTitle>
             <CardDescription>
-              Paginated bounty rows; optional active filter.
+              Paginated bounty rows; optional filters and sort order.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 text-sm text-muted-foreground">
@@ -304,6 +316,20 @@ export default function DocumentationPage() {
               </code>
               . If omitted, no filter is applied (returns both active and
               inactive).
+            </p>
+            <p>
+              <strong className="text-foreground">Sort:</strong>{" "}
+              <EndpointCode>?sort=high</EndpointCode> orders by{" "}
+              <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
+                amount
+              </code>{" "}
+              descending (largest first); <EndpointCode>?sort=low</EndpointCode>{" "}
+              ascending (smallest first). Omit <EndpointCode>sort</EndpointCode>{" "}
+              for newest first by{" "}
+              <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
+                created_at
+              </code>
+              .
             </p>
             <p>
               <strong className="text-foreground">Response:</strong> a JSON
@@ -327,6 +353,22 @@ export default function DocumentationPage() {
               array of devil fruit objects (fields below).
             </p>
             <FieldTable rows={toRows(DEVIL_FRUIT_ROW_FIELDS)} />
+            <p>
+              Fields{" "}
+              <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
+                name
+              </code>{" "}
+              and{" "}
+              <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
+                model
+              </code>{" "}
+              use the same{" "}
+              <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
+                CharacterNameJson
+              </code>{" "}
+              convention as character names when the value is a localized
+              object (see the Characters section above).
+            </p>
           </CardContent>
         </Card>
 

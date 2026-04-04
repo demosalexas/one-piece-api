@@ -6,13 +6,6 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-/** Canonical JSON shape for `characters.name` (column remains `json` in Postgres). */
-export type CharacterNameJson = {
-  en: string
-  jp: string
-  romaji: string
-}
-
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
@@ -71,6 +64,45 @@ export type Database = {
           },
         ]
       }
+      character_devil_fruits: {
+        Row: {
+          character_id: string | null
+          created_at: string
+          devil_fruit_id: string | null
+          id: string
+          is_active: boolean | null
+        }
+        Insert: {
+          character_id?: string | null
+          created_at?: string
+          devil_fruit_id?: string | null
+          id?: string
+          is_active?: boolean | null
+        }
+        Update: {
+          character_id?: string | null
+          created_at?: string
+          devil_fruit_id?: string | null
+          id?: string
+          is_active?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_devil_fruits_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "character_devil_fruits_devil_fruit_id_fkey"
+            columns: ["devil_fruit_id"]
+            isOneToOne: false
+            referencedRelation: "devil_fruits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       characters: {
         Row: {
           age: number | null
@@ -79,6 +111,7 @@ export type Database = {
           created_at: string
           height: number | null
           id: string
+          image_url: string | null
           name: Json | null
           status: string
         }
@@ -89,6 +122,7 @@ export type Database = {
           created_at?: string
           height?: number | null
           id?: string
+          image_url?: string | null
           name?: Json | null
           status?: string
         }
@@ -99,6 +133,7 @@ export type Database = {
           created_at?: string
           height?: number | null
           id?: string
+          image_url?: string | null
           name?: Json | null
           status?: string
         }
@@ -108,17 +143,29 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          name: string | null
+          image_url: string | null
+          model: Json | null
+          name: Json | null
+          sub_type: string | null
+          type: string | null
         }
         Insert: {
           created_at?: string
           id?: string
-          name?: string | null
+          image_url?: string | null
+          model?: Json | null
+          name?: Json | null
+          sub_type?: string | null
+          type?: string | null
         }
         Update: {
           created_at?: string
           id?: string
-          name?: string | null
+          image_url?: string | null
+          model?: Json | null
+          name?: Json | null
+          sub_type?: string | null
+          type?: string | null
         }
         Relationships: []
       }
