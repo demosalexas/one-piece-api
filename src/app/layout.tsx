@@ -32,8 +32,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
-      <body>
-        {/* Fixed so it always sits above full-viewport layers (e.g. home grain); reserve space below */}
+      <body className="bg-background text-foreground">
         <div
           role="status"
           aria-live="polite"
@@ -45,7 +44,8 @@ export default function RootLayout({
             — not finished yet; the API and site are coming soon.
           </span>
         </div>
-        <div className="pt-14">{children}</div>
+        {/* pt-14 = spacing for fixed banner; min-h-dvh on this box (border-box) = one viewport tall incl. padding */}
+        <div className="box-border min-h-dvh pt-14">{children}</div>
         <Analytics />
         <SpeedInsights />
       </body>

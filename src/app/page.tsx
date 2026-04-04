@@ -1,4 +1,12 @@
-import { BookOpen, ExternalLink, Heart, Scale, Server } from "lucide-react";
+import {
+  BookOpen,
+  Coins,
+  ExternalLink,
+  Heart,
+  Scale,
+  Server,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 
 import Logo from "@/components/logo";
@@ -43,7 +51,7 @@ export default function Home() {
   return (
     <div
       className={cn(
-        "surface-story relative min-h-dvh overflow-x-hidden bg-background text-foreground",
+        "surface-story relative min-h-[calc(100dvh-theme(spacing.14))] overflow-x-clip bg-background text-foreground",
         "[--font-heading:var(--font-display)]",
       )}
     >
@@ -74,6 +82,18 @@ export default function Home() {
             </span>
           </div>
           <nav className="home-animate-fade home-delay-1 flex flex-wrap items-center justify-end gap-1.5 rounded-full border border-border/80 bg-card/85 p-1 shadow-sm backdrop-blur-md">
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/characters">
+                <Users data-icon="inline-start" />
+                Characters
+              </Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/bounties">
+                <Coins data-icon="inline-start" />
+                Bounties
+              </Link>
+            </Button>
             <Button variant="ghost" size="sm" asChild>
               <Link href="/documentation">
                 <BookOpen data-icon="inline-start" />
@@ -165,8 +185,8 @@ export default function Home() {
                   </CardHeader>
                   <CardContent className="flex flex-col gap-3 text-muted-foreground">
                     <p>
-                      A REST interface focused on the series, with characters and
-                      images aligned to reference material.
+                      A REST interface focused on the series, with characters
+                      and images aligned to reference material.
                     </p>
                     <p>
                       The docs cover routes, parameters, and response formats so
@@ -234,8 +254,8 @@ export default function Home() {
                 </CardHeader>
                 <CardContent className="text-muted-foreground">
                   <p>
-                    Sharing the repo or opening discussions helps other developers
-                    discover the project.
+                    Sharing the repo or opening discussions helps other
+                    developers discover the project.
                   </p>
                 </CardContent>
                 <CardFooter className="border-t border-border/60">

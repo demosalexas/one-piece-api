@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     error 
   } = await supabase
     .from('characters')
-    .select('*')
+    .select('*, bounties(*)')
     .limit(limit)
     .order('created_at', { ascending: false })
     .range((page - 1) * limit, page * limit - 1)

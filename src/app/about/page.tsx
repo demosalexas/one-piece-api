@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="min-h-dvh bg-background">
+    <div className="min-h-[calc(100dvh-theme(spacing.14))] bg-background">
       <header className="border-b border-border/60 bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-4 md:px-6">
           <Logo />

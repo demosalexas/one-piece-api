@@ -1,15 +1,22 @@
 import Image from "next/image";
-import Link from 'next/link'
+import Link from "next/link";
 
-export default function Logo () {
+/** Icon only — use inside a parent `Link` when the whole row should be one link. */
+export function LogoMark() {
   return (
-    <Link href='/' className="hover:cursor-pointer">
-      <Image 
-        src="/luffy-flag-icon.png" 
-        alt="Luffy Jolly Roger"
-        width="40" 
-        height="40"
-      />
+    <Image
+      alt="Luffy Jolly Roger"
+      height={40}
+      src="/luffy-flag-icon.png"
+      width={40}
+    />
+  );
+}
+
+export default function Logo() {
+  return (
+    <Link className="hover:cursor-pointer" href="/">
+      <LogoMark />
     </Link>
-  )
+  );
 }

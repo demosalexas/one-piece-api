@@ -125,6 +125,8 @@
   }
   html {
     @apply font-sans;
+    /* One horizontal edge: decorative layers use vw/translations; clip is viewport-safe. */
+    overflow-x: clip;
   }
 }
 

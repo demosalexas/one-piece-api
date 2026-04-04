@@ -6,6 +6,13 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+/** Canonical JSON shape for `characters.name` (column remains `json` in Postgres). */
+export type CharacterNameJson = {
+  en: string
+  jp: string
+  romaji: string
+}
+
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
@@ -38,18 +45,21 @@ export type Database = {
           character_id: string | null
           created_at: string
           id: string
+          is_active: boolean
         }
         Insert: {
           amount?: number | null
           character_id?: string | null
           created_at?: string
           id?: string
+          is_active?: boolean
         }
         Update: {
           amount?: number | null
           character_id?: string | null
           created_at?: string
           id?: string
+          is_active?: boolean
         }
         Relationships: [
           {
@@ -63,25 +73,34 @@ export type Database = {
       }
       characters: {
         Row: {
+          age: number | null
+          birthday: Json | null
+          blood_type: string
           created_at: string
+          height: number | null
           id: string
-          name_en: string | null
-          name_jp: string | null
-          name_romaji: string | null
+          name: Json | null
+          status: string
         }
         Insert: {
+          age?: number | null
+          birthday?: Json | null
+          blood_type?: string
           created_at?: string
+          height?: number | null
           id?: string
-          name_en?: string | null
-          name_jp?: string | null
-          name_romaji?: string | null
+          name?: Json | null
+          status?: string
         }
         Update: {
+          age?: number | null
+          birthday?: Json | null
+          blood_type?: string
           created_at?: string
+          height?: number | null
           id?: string
-          name_en?: string | null
-          name_jp?: string | null
-          name_romaji?: string | null
+          name?: Json | null
+          status?: string
         }
         Relationships: []
       }
@@ -100,6 +119,42 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string | null
+        }
+        Relationships: []
+      }
+      islands: {
+        Row: {
+          created_at: string
+          id: string
+          name: Json | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: Json | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: Json | null
+        }
+        Relationships: []
+      }
+      ships: {
+        Row: {
+          created_at: string
+          id: string
+          name: Json | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: Json | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: Json | null
         }
         Relationships: []
       }
